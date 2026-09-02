@@ -265,10 +265,17 @@
       color: var(--text-muted);
     }
 
-    .card-details span {
+    .card-details span, .card-details a {
       display: flex;
       align-items: center;
       gap: 4px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card-details a:hover {
+      color: var(--primary);
+      text-decoration: underline;
     }
 
     .card-notes {
@@ -468,7 +475,7 @@
 
     <div class="controls">
       <div class="search-box">
-        <input type="text" id="search-input" class="input-field" placeholder="Search by name or place..." oninput="renderBookings()">
+        <input type="text" id="search-input" class="input-field" placeholder="Search by name, place, or phone..." oninput="renderBookings()">
       </div>
       <div class="filter-group">
         <input type="date" id="date-filter" class="input-field" onchange="renderBookings()">
@@ -509,6 +516,10 @@
           <input type="text" id="form-name" class="input-field" required>
         </div>
         <div class="form-group">
+          <label for="form-phone">Phone Number (Optional)</label>
+          <input type="tel" id="form-phone" class="input-field">
+        </div>
+        <div class="form-group">
           <label for="form-date">Date *</label>
           <input type="date" id="form-date" class="input-field" required>
         </div>
@@ -530,31 +541,33 @@
   </div>
 
   <script>
+    const SECRET_PIN = "872203";
+
     const defaultData = [
-      { id: "01", date: "2026-08-28", time: "05:00", name: "House warming", place: "House warming", notes: "" },
-      { id: "02", date: "2026-08-28", time: "14:00", name: "Kadher", place: "Kadher Location", notes: "" },
-      { id: "03", date: "2026-08-28", time: "21:00", name: "Quthubiyath", place: "Quthubiyath", notes: "" },
-      { id: "04", date: "2026-08-29", time: "07:00", name: "Thanweer", place: "Thanweer", notes: "" },
-      { id: "05", date: "2026-08-29", time: "21:00", name: "Harneef timber 🪵", place: "Harneef timber", notes: "" },
-      { id: "06", date: "2026-08-30", time: "11:30", name: "Ibrahim fish", place: "Ibrahim fish", notes: "" },
-      { id: "07", date: "2026-08-30", time: "13:30", name: "Kunji ahmad haj.", place: "Kunji ahmad haj.", notes: "" },
-      { id: "08", date: "2026-08-30", time: "21:00", name: "Ganesh Nagar", place: "Ganesh Nagar", notes: "" },
-      { id: "09", date: "2026-08-31", time: "20:30", name: "Chandu pasha", place: "Chandu pasha", notes: "" },
-      { id: "10", date: "2026-09-03", time: "01:30", name: "Afnan", place: "Afnan", notes: "" },
-      { id: "11", date: "2026-09-03", time: "21:00", name: "Ashraf fruits", place: "Ashraf fruits", notes: "" },
-      { id: "12", date: "2026-09-04", time: "14:00", name: "Hameed haji", place: "Hameed haji", notes: "" },
-      { id: "13", date: "2026-09-04", time: "21:00", name: "Shamsu VP", place: "Shamsu VP", notes: "" },
-      { id: "14", date: "2026-09-05", time: "23:00", name: "Thawakkla hotel.", place: "Thawakkla hotel.", notes: "" },
-      { id: "15", date: "2026-09-05", time: "21:00", name: "Adam achari", place: "Adam achari", notes: "" },
-      { id: "16", date: "2026-09-06", time: "13:30", name: "Raheem", place: "Raheem", notes: "" },
-      { id: "17", date: "2026-09-07", time: "13:30", name: "Basheer fish", place: "Basheer fish", notes: "" },
-      { id: "18", date: "2026-09-08", time: "13:30", name: "Musthafa secretary", place: "Musthafa secretary", notes: "" }
+      { id: "01", date: "2026-08-28", time: "05:00", name: "House warming", phone: "", place: "House warming", notes: "" },
+      { id: "02", date: "2026-08-28", time: "14:00", name: "Kadher", phone: "", place: "Kadher Location", notes: "" },
+      { id: "03", date: "2026-08-28", time: "21:00", name: "Quthubiyath", phone: "", place: "Quthubiyath", notes: "" },
+      { id: "04", date: "2026-08-29", time: "07:00", name: "Thanweer", phone: "", place: "Thanweer", notes: "" },
+      { id: "05", date: "2026-08-29", time: "21:00", name: "Harneef timber 🪵", phone: "", place: "Harneef timber", notes: "" },
+      { id: "06", date: "2026-08-30", time: "11:30", name: "Ibrahim fish", phone: "", place: "Ibrahim fish", notes: "" },
+      { id: "07", date: "2026-08-30", time: "13:30", name: "Kunji ahmad haj.", phone: "", place: "Kunji ahmad haj.", notes: "" },
+      { id: "08", date: "2026-08-30", time: "21:00", name: "Ganesh Nagar", phone: "", place: "Ganesh Nagar", notes: "" },
+      { id: "09", date: "2026-08-31", time: "20:30", name: "Chandu pasha", phone: "", place: "Chandu pasha", notes: "" },
+      { id: "10", date: "2026-09-03", time: "01:30", name: "Afnan", phone: "", place: "Afnan", notes: "" },
+      { id: "11", date: "2026-09-03", time: "21:00", name: "Ashraf fruits", phone: "", place: "Ashraf fruits", notes: "" },
+      { id: "12", date: "2026-09-04", time: "14:00", name: "Hameed haji", phone: "", place: "Hameed haji", notes: "" },
+      { id: "13", date: "2026-09-04", time: "21:00", name: "Shamsu VP", phone: "", place: "Shamsu VP", notes: "" },
+      { id: "14", date: "2026-09-05", time: "23:00", name: "Thawakkla hotel.", phone: "", place: "Thawakkla hotel.", notes: "" },
+      { id: "15", date: "2026-09-05", time: "21:00", name: "Adam achari", phone: "", place: "Adam achari", notes: "" },
+      { id: "16", date: "2026-09-06", time: "13:30", name: "Raheem", phone: "", place: "Raheem", notes: "" },
+      { id: "17", date: "2026-09-07", time: "13:30", name: "Basheer fish", phone: "", place: "Basheer fish", notes: "" },
+      { id: "18", date: "2026-09-08", time: "13:30", name: "Musthafa secretary", phone: "", place: "Musthafa secretary", notes: "" }
     ];
 
     let bookings = [];
 
     function init() {
-      const saved = localStorage.getItem('moulid_bookings_v4');
+      const saved = localStorage.getItem('moulid_bookings_v7');
       if (saved) {
         bookings = JSON.parse(saved);
       } else {
@@ -569,7 +582,7 @@
     }
 
     function saveData() {
-      localStorage.setItem('moulid_bookings_v4', JSON.stringify(bookings));
+      localStorage.setItem('moulid_bookings_v7', JSON.stringify(bookings));
     }
 
     function formatTime12Hr(timeStr) {
@@ -627,7 +640,9 @@
       document.getElementById('stat-completed').innerText = countCompleted;
 
       let filtered = bookings.filter(b => {
-        const matchesSearch = b.name.toLowerCase().includes(searchVal) || b.place.toLowerCase().includes(searchVal);
+        const matchesSearch = b.name.toLowerCase().includes(searchVal) || 
+                              b.place.toLowerCase().includes(searchVal) ||
+                              (b.phone && b.phone.includes(searchVal));
         const matchesDate = !dateVal || b.date === dateVal;
         const currentStatus = getBookingStatus(b.date, b.time);
         const matchesStatus = statusVal === 'All' || currentStatus === statusVal;
@@ -658,6 +673,7 @@
             <span>📅 ${formatDateDisplay(b.date)}</span>
             <span>⏰ ${formatTime12Hr(b.time)}</span>
             <span>📍 ${b.place}</span>
+            ${b.phone ? `<a href="tel:${b.phone}">📞 ${b.phone}</a>` : ''}
           </div>
           ${b.notes ? `<div class="card-notes">${b.notes}</div>` : ''}
           <div class="card-actions">
@@ -688,6 +704,7 @@
         const b = bookings.find(item => item.id === editId);
         document.getElementById('booking-id').value = b.id;
         document.getElementById('form-name').value = b.name;
+        document.getElementById('form-phone').value = b.phone || '';
         document.getElementById('form-date').value = b.date;
         document.getElementById('form-time').value = b.time;
         document.getElementById('form-place').value = b.place;
@@ -710,6 +727,7 @@
 
       const id = document.getElementById('booking-id').value;
       const name = document.getElementById('form-name').value;
+      const phone = document.getElementById('form-phone').value;
       const date = document.getElementById('form-date').value;
       const time = document.getElementById('form-time').value;
       const place = document.getElementById('form-place').value;
@@ -727,12 +745,12 @@
       if (id) {
         const index = bookings.findIndex(b => b.id === id);
         if (index !== -1) {
-          bookings[index] = { id, date, time, name, place, notes };
+          bookings[index] = { id, date, time, name, phone, place, notes };
         }
       } else {
         const nextId = (bookings.length > 0 ? (Math.max(...bookings.map(b => parseInt(b.id))) + 1) : 1)
           .toString().padStart(2, '0');
-        bookings.push({ id: nextId, date, time, name, place, notes });
+        bookings.push({ id: nextId, date, time, name, phone, place, notes });
       }
 
       saveData();
@@ -741,17 +759,21 @@
     }
 
     function editBooking(id) {
-      openModal(id);
+      const userPin = prompt('എഡിറ്റ് ചെയ്യാൻ PIN നമ്പർ നൽകുക:');
+      if (userPin === null) return;
+
+      if (userPin === SECRET_PIN) {
+        openModal(id);
+      } else {
+        alert('തെറ്റായ PIN നമ്പർ! എഡിറ്റ് ചെയ്യാൻ സാധിക്കില്ല.');
+      }
     }
 
-    // PIN നൽകിയാൽ മാത്രം ഡിലീറ്റ് ആകുന്ന ഫങ്ഷൻ (PIN: 872203)
     function deleteBooking(id) {
-      const secretPin = "872203";
       const userPin = prompt('ഡിലീറ്റ് ചെയ്യാൻ PIN നമ്പർ നൽകുക:');
+      if (userPin === null) return;
 
-      if (userPin === null) return; // Cancel അടിച്ചാൽ ഒന്നുമില്ല
-
-      if (userPin === secretPin) {
+      if (userPin === SECRET_PIN) {
         if (confirm('തീർച്ചയായും ഇത് ഡിലീറ്റ് ചെയ്യണമെന്നുണ്ടോ?')) {
           bookings = bookings.filter(b => b.id !== id);
           saveData();
