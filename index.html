@@ -1,847 +1,760 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moulid Booking Management</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      --primary: #0F5132;
-      --primary-dark: #0A3622;
-      --accent: #D4AF37;
-      --accent-light: #F4E8C1;
-      --bg: #F8F9FA;
-      --surface: #FFFFFF;
-      --text: #212529;
-      --text-muted: #6C757D;
-      --border: #E9ECEF;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      --radius: 12px;
-      
-      --status-today-bg: #E8F5E9;
-      --status-today-text: #2E7D32;
-      --status-upcoming-bg: #E3F2FD;
-      --status-upcoming-text: #1565C0;
-      --status-completed-bg: #EEEEEE;
-      --status-completed-text: #616161;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding-bottom: 80px;
-    }
-
-    header {
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-      color: white;
-      padding: 1.5rem 1rem;
-      border-bottom: 4px solid var(--accent);
-      box-shadow: var(--shadow);
-    }
-
-    .header-content {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand h1 {
-      font-family: 'Amiri', serif;
-      font-size: 1.8rem;
-      color: var(--accent);
-      letter-spacing: 0.5px;
-    }
-
-    .brand p {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-
-    .btn-primary {
-      background-color: var(--accent);
-      color: var(--primary-dark);
-      border: none;
-      padding: 0.6rem 1.2rem;
-      font-weight: 700;
-      border-radius: var(--radius);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-    }
-
-    .btn-primary:hover {
-      background-color: #c4a02e;
-      transform: translateY(-1px);
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-
-    @media (min-width: 600px) {
-      .dashboard {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    .stat-card {
-      background: var(--surface);
-      padding: 1rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      text-align: center;
-    }
-
-    .stat-card .number {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-card .label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-top: 4px;
-    }
-
-    .controls {
-      background: var(--surface);
-      padding: 1rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    @media (min-width: 600px) {
-      .controls {
-        flex-direction: row;
-        align-items: center;
-      }
-    }
-
-    .search-box {
-      flex: 1;
-    }
-
-    .input-field, .select-field {
-      width: 100%;
-      padding: 0.65rem 0.8rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    .input-field:focus, .select-field:focus {
-      border-color: var(--primary);
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .btn-reset {
-      background: #e0e0e0;
-      border: none;
-      padding: 0.65rem 0.8rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .view-toggle {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 0.5rem;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .tab-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .booking-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .booking-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      border-left: 5px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .booking-card.status-Today { border-left-color: var(--status-today-text); }
-    .booking-card.status-Upcoming { border-left-color: var(--status-upcoming-text); }
-    .booking-card.status-Completed { border-left-color: var(--status-completed-text); }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .booking-id {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .booking-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.25rem 0.6rem;
-      border-radius: 50px;
-      text-transform: uppercase;
-    }
-
-    .badge.Today { background: var(--status-today-bg); color: var(--status-today-text); }
-    .badge.Upcoming { background: var(--status-upcoming-bg); color: var(--status-upcoming-text); }
-    .badge.Completed { background: var(--status-completed-bg); color: var(--status-completed-text); }
-
-    .card-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .card-details span, .card-details a {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .icon-svg {
-      width: 15px;
-      height: 15px;
-      fill: currentColor;
-    }
-
-    .card-details a:hover {
-      color: var(--primary);
-      text-decoration: underline;
-    }
-
-    .card-notes {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--text-muted);
-      background: var(--bg);
-      padding: 0.4rem;
-      border-radius: 4px;
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      border-top: 1px solid var(--border);
-      padding-top: 0.5rem;
-    }
-
-    .btn-action {
-      background: none;
-      border: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .btn-edit { color: var(--status-upcoming-text); }
-    .btn-edit:hover { background: var(--status-upcoming-bg); }
-
-    .btn-delete { color: #d32f2f; }
-    .btn-delete:hover { background: #ffebee; }
-
-    .fab {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 56px;
-      height: 56px;
-      background: var(--accent);
-      color: var(--primary-dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border: none;
-      cursor: pointer;
-      z-index: 99;
-    }
-
-    @media (min-width: 600px) {
-      .fab { display: none; }
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal {
-      background: var(--surface);
-      width: 90%;
-      max-width: 450px;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .modal-header h3 { color: var(--primary); }
-
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .form-group { margin-bottom: 0.8rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .alert {
-      padding: 0.6rem;
-      background: #ffebee;
-      color: #c62828;
-      font-size: 0.8rem;
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-      display: none;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      background: var(--surface);
-      padding: 0.5rem;
-      border-radius: var(--radius);
-    }
-
-    .calendar-day-head {
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.75rem;
-      padding: 4px 0;
-    }
-
-    .calendar-day {
-      min-height: 60px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px;
-      font-size: 0.7rem;
-    }
-
-    .calendar-day .day-num {
-      font-weight: bold;
-      margin-bottom: 2px;
-    }
-
-    .calendar-event {
-      background: var(--accent-light);
-      color: var(--primary-dark);
-      padding: 1px 3px;
-      border-radius: 2px;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arabic Letter Learning Game 🎮</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Scheherazade+New:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: #f0fdf4;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            direction: ltr;
+        }
+        .arabic-text {
+            font-family: 'Scheherazade New', serif;
+            direction: rtl;
+        }
+        @keyframes pulse-gentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-gentle {
+            animation: pulse-gentle 2s infinite ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between text-gray-800">
 
-  <header>
-    <div class="header-content">
-      <div class="brand">
-        <h1>Moulid Manager</h1>
-        <p>Booking System</p>
-      </div>
-      <button class="btn-primary" onclick="openModal()">+ New Booking</button>
-    </div>
-  </header>
-
-  <div class="container">
-    <div class="dashboard">
-      <div class="stat-card">
-        <div class="number" id="stat-total">0</div>
-        <div class="label">Total</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="stat-today">0</div>
-        <div class="label">Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="stat-upcoming">0</div>
-        <div class="label">Upcoming</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="stat-completed">0</div>
-        <div class="label">Completed</div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <div class="search-box">
-        <input type="text" id="search-input" class="input-field" placeholder="Search by name, place, or phone..." oninput="renderBookings()">
-      </div>
-      <div class="filter-group">
-        <input type="date" id="date-filter" class="input-field" onchange="renderBookings()">
-        <select id="status-filter" class="select-field" onchange="renderBookings()">
-          <option value="All">All Status</option>
-          <option value="Today">Today</option>
-          <option value="Upcoming">Upcoming</option>
-          <option value="Completed">Completed</option>
-        </select>
-        <button class="btn-reset" onclick="resetFilters()">Clear</button>
-      </div>
-    </div>
-
-    <div class="view-toggle">
-      <button class="tab-btn active" id="btn-list-view" onclick="switchView('list')">List View</button>
-      <button class="tab-btn" id="btn-cal-view" onclick="switchView('calendar')">Calendar View</button>
-    </div>
-
-    <div id="booking-list-container" class="booking-list"></div>
-    <div id="calendar-container" style="display: none;">
-      <div class="calendar-grid" id="calendar-grid"></div>
-    </div>
-  </div>
-
-  <button class="fab" onclick="openModal()">+</button>
-
-  <div class="modal-overlay" id="booking-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="modal-title">New Booking</h3>
-        <button class="close-btn" onclick="closeModal()">&times;</button>
-      </div>
-      <div class="alert" id="modal-alert"></div>
-      <form id="booking-form" onsubmit="handleFormSubmit(event)">
-        <input type="hidden" id="booking-id">
-        <div class="form-group">
-          <label for="form-name">Name *</label>
-          <input type="text" id="form-name" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label for="form-phone">Phone Number (Optional)</label>
-          <input type="tel" id="form-phone" class="input-field">
-        </div>
-        <div class="form-group">
-          <label for="form-date">Date *</label>
-          <input type="date" id="form-date" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label for="form-time">Time *</label>
-          <input type="time" id="form-time" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label for="form-place">Place / Location *</label>
-          <input type="text" id="form-place" class="input-field" required>
-        </div>
-        <div class="form-group">
-          <label for="form-notes">Notes (Optional)</label>
-          <input type="text" id="form-notes" class="input-field">
-        </div>
-        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">Save Booking</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const SECRET_PIN = "872203";
-
-    const defaultData = [
-      { id: "01", date: "2026-08-28", time: "05:00", name: "House warming", phone: "", place: "House warming", notes: "" },
-      { id: "02", date: "2026-08-28", time: "14:00", name: "Kadher", phone: "", place: "Kadher Location", notes: "" },
-      { id: "03", date: "2026-08-28", time: "21:00", name: "Quthubiyath", phone: "", place: "Quthubiyath", notes: "" },
-      { id: "04", date: "2026-08-29", time: "07:00", name: "Thanweer", phone: "", place: "Thanweer", notes: "" },
-      { id: "05", date: "2026-08-29", time: "21:00", name: "Harneef timber 🪵", phone: "", place: "Harneef timber", notes: "" },
-      { id: "06", date: "2026-08-30", time: "11:30", name: "Ibrahim fish", phone: "", place: "Ibrahim fish", notes: "" },
-      { id: "07", date: "2026-08-30", time: "13:30", name: "Kunji ahmad haj.", phone: "", place: "Kunji ahmad haj.", notes: "" },
-      { id: "08", date: "2026-08-30", time: "21:00", name: "Ganesh Nagar", phone: "", place: "Ganesh Nagar", notes: "" },
-      { id: "09", date: "2026-08-31", time: "20:30", name: "Chandu pasha", phone: "", place: "Chandu pasha", notes: "" },
-      { id: "10", date: "2026-09-03", time: "01:30", name: "Afnan", phone: "", place: "Afnan", notes: "" },
-      { id: "11", date: "2026-09-03", time: "21:00", name: "Ashraf fruits", phone: "", place: "Ashraf fruits", notes: "" },
-      { id: "12", date: "2026-09-04", time: "14:00", name: "Hameed haji", phone: "", place: "Hameed haji", notes: "" },
-      { id: "13", date: "2026-09-04", time: "21:00", name: "Shamsu VP", phone: "", place: "Shamsu VP", notes: "" },
-      { id: "14", date: "2026-09-05", time: "23:00", name: "Thawakkla hotel.", phone: "", place: "Thawakkla hotel.", notes: "" },
-      { id: "15", date: "2026-09-05", time: "21:00", name: "Adam achari", phone: "", place: "Adam achari", notes: "" },
-      { id: "16", date: "2026-09-06", time: "13:30", name: "Raheem", phone: "", place: "Raheem", notes: "" },
-      { id: "17", date: "2026-09-07", time: "13:30", name: "Basheer fish", phone: "", place: "Basheer fish", notes: "" },
-      { id: "18", date: "2026-09-08", time: "13:30", name: "Musthafa secretary", phone: "", place: "Musthafa secretary", notes: "" }
-    ];
-
-    let bookings = [];
-
-    function init() {
-      // Check for saved data across common keys or restore defaults
-      const saved = localStorage.getItem('moulid_bookings_v7') || 
-                    localStorage.getItem('moulid_bookings_v8') || 
-                    localStorage.getItem('moulid_bookings');
-
-      if (saved) {
-        bookings = JSON.parse(saved);
-      } else {
-        bookings = defaultData;
-      }
-      
-      saveData();
-      resetFilters();
-
-      setInterval(() => {
-        renderBookings();
-      }, 60000);
-    }
-
-    function saveData() {
-      const dataStr = JSON.stringify(bookings);
-      localStorage.setItem('moulid_bookings', dataStr);
-      localStorage.setItem('moulid_bookings_v7', dataStr);
-      localStorage.setItem('moulid_bookings_v8', dataStr);
-    }
-
-    function formatTime12Hr(timeStr) {
-      let [hours, minutes] = timeStr.split(':').map(Number);
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12; 
-      return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
-    }
-
-    function formatDateDisplay(dateStr) {
-      const [year, month, day] = dateStr.split('-');
-      return `${day}/${month}/${year}`;
-    }
-
-    function getBookingStatus(dateStr, timeStr) {
-      const now = new Date();
-      const bookingDateTime = new Date(`${dateStr}T${timeStr}`);
-      const isToday = now.toDateString() === bookingDateTime.toDateString();
-
-      if (bookingDateTime < now) {
-        return 'Completed';
-      } else if (isToday) {
-        return 'Today';
-      } else {
-        return 'Upcoming';
-      }
-    }
-
-    function sortBookings(list) {
-      return list.sort((a, b) => {
-        const dateTimeA = new Date(`${a.date}T${a.time}`);
-        const dateTimeB = new Date(`${b.date}T${b.time}`);
-        return dateTimeA - dateTimeB;
-      });
-    }
-
-    function renderBookings() {
-      const listContainer = document.getElementById('booking-list-container');
-      const searchVal = document.getElementById('search-input').value.toLowerCase();
-      const dateVal = document.getElementById('date-filter').value;
-      const statusVal = document.getElementById('status-filter').value;
-
-      let countToday = 0, countUpcoming = 0, countCompleted = 0;
-      bookings.forEach(b => {
-        const st = getBookingStatus(b.date, b.time);
-        if (st === 'Today') countToday++;
-        if (st === 'Upcoming') countUpcoming++;
-        if (st === 'Completed') countCompleted++;
-      });
-
-      document.getElementById('stat-total').innerText = bookings.length;
-      document.getElementById('stat-today').innerText = countToday;
-      document.getElementById('stat-upcoming').innerText = countUpcoming;
-      document.getElementById('stat-completed').innerText = countCompleted;
-
-      let filtered = bookings.filter(b => {
-        const matchesSearch = b.name.toLowerCase().includes(searchVal) || 
-                              b.place.toLowerCase().includes(searchVal) ||
-                              (b.phone && b.phone.includes(searchVal));
-        const matchesDate = !dateVal || b.date === dateVal;
-        const currentStatus = getBookingStatus(b.date, b.time);
-        const matchesStatus = statusVal === 'All' || currentStatus === statusVal;
-        return matchesSearch && matchesDate && matchesStatus;
-      });
-
-      filtered = sortBookings(filtered);
-      listContainer.innerHTML = '';
-
-      if (filtered.length === 0) {
-        listContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No bookings found.</div>';
-        return;
-      }
-
-      const calSvg = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>`;
-
-      filtered.forEach(b => {
-        const status = getBookingStatus(b.date, b.time);
-        const card = document.createElement('div');
-        card.className = `booking-card status-${status}`;
-        card.innerHTML = `
-          <div class="card-header">
-            <div>
-              <span class="booking-id">#${b.id}</span>
-              <div class="booking-name">${b.name}</div>
+    <!-- TOP NAVIGATION / HEADER -->
+    <header class="bg-amber-400 p-3 shadow-md rounded-b-3xl border-b-4 border-amber-500 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex gap-2">
+                <button onclick="showScreen('home-screen')" class="bg-white hover:bg-amber-100 text-amber-800 font-bold py-1.5 px-3 rounded-2xl shadow border-b-4 border-amber-200 active:translate-y-1 flex items-center gap-1 text-sm">
+                    🏠 <span>Home</span>
+                </button>
+                <button onclick="showScreen('progress-screen')" class="bg-white hover:bg-amber-100 text-amber-800 font-bold py-1.5 px-3 rounded-2xl shadow border-b-4 border-amber-200 active:translate-y-1 flex items-center gap-1 text-sm">
+                    📊 <span>Progress</span>
+                </button>
             </div>
-            <span class="badge ${status}">${status}</span>
-          </div>
-          <div class="card-details">
-            <span>${calSvg} ${formatDateDisplay(b.date)}</span>
-            <span>⏰ ${formatTime12Hr(b.time)}</span>
-            <span>📍 ${b.place}</span>
-            ${b.phone ? `<a href="tel:${b.phone}">📞 ${b.phone}</a>` : ''}
-          </div>
-          ${b.notes ? `<div class="card-notes">${b.notes}</div>` : ''}
-          <div class="card-actions">
-            <button class="btn-action btn-edit" onclick="editBooking('${b.id}')">Edit</button>
-            <button class="btn-action btn-delete" onclick="deleteBooking('${b.id}')">Delete</button>
-          </div>
-        `;
-        listContainer.appendChild(card);
-      });
 
-      renderCalendar();
-    }
+            <div class="flex items-center gap-3 bg-amber-500/30 px-3 py-1 rounded-2xl border border-amber-600/20">
+                <div class="flex items-center gap-1 font-extrabold text-amber-900 text-sm sm:text-base">
+                    ⭐ <span id="header-stars">0</span>
+                </div>
+                <div class="flex items-center gap-1 font-extrabold text-amber-900 text-xs sm:text-sm">
+                    🎮 Lvl <span id="header-level">1</span>
+                </div>
+                <button id="sound-toggle" onclick="toggleSound()" class="bg-white p-1 rounded-xl shadow border-b-2 border-amber-200 text-sm">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
 
-    function resetFilters() {
-      document.getElementById('search-input').value = '';
-      document.getElementById('date-filter').value = '';
-      document.getElementById('status-filter').value = 'All';
-      renderBookings();
-    }
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-4xl w-full mx-auto p-3 flex flex-col justify-center">
 
-    function openModal(editId = null) {
-      const modal = document.getElementById('booking-modal');
-      const title = document.getElementById('modal-title');
-      const alert = document.getElementById('modal-alert');
-      alert.style.display = 'none';
+        <!-- 1. HOME SCREEN -->
+        <section id="home-screen" class="screen-view text-center py-2 animate-pop">
+            <div class="bg-white p-5 rounded-3xl shadow-xl border-4 border-emerald-300 max-w-md mx-auto">
+                <div class="text-5xl mb-1 animate-bounce">🎈</div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mb-1">Arabic Letter Game 🎮</h1>
+                <p class="text-gray-600 font-semibold mb-4 text-sm">Learn Arabic Letters by Playing!</p>
 
-      if (editId) {
-        const b = bookings.find(item => item.id === editId);
-        document.getElementById('booking-id').value = b.id;
-        document.getElementById('form-name').value = b.name;
-        document.getElementById('form-phone').value = b.phone || '';
-        document.getElementById('form-date').value = b.date;
-        document.getElementById('form-time').value = b.time;
-        document.getElementById('form-place').value = b.place;
-        document.getElementById('form-notes').value = b.notes || '';
-        title.innerText = 'Edit Booking';
-      } else {
-        document.getElementById('booking-form').reset();
-        document.getElementById('booking-id').value = '';
-        title.innerText = 'New Booking';
-      }
-      modal.classList.add('active');
-    }
+                <div class="space-y-3">
+                    <button onclick="startFindGame()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-2xl text-base shadow-lg border-b-4 border-emerald-700 active:translate-y-1 flex items-center justify-start px-5 gap-3">
+                        <span class="text-2xl">🔍</span> <span>Find the Letter</span>
+                    </button>
+                    <button onclick="startTraceGame()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-4 rounded-2xl text-base shadow-lg border-b-4 border-sky-700 active:translate-y-1 flex items-center justify-start px-5 gap-3">
+                        <span class="text-2xl">✍️</span> <span>Write the Letter (Trace)</span>
+                    </button>
+                    <button onclick="startCatchGame()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-2xl text-base shadow-lg border-b-4 border-purple-700 active:translate-y-1 flex items-center justify-start px-5 gap-3">
+                        <span class="text-2xl">🎯</span> <span>Catch the Letter</span>
+                    </button>
+                    <button onclick="startMemoryGame()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-2xl text-base shadow-lg border-b-4 border-rose-700 active:translate-y-1 flex items-center justify-start px-5 gap-3">
+                        <span class="text-2xl">🧠</span> <span>Memory Game</span>
+                    </button>
+                </div>
 
-    function closeModal() {
-      document.getElementById('booking-modal').classList.remove('active');
-    }
+                <div class="mt-5 pt-3 border-t-2 border-dashed border-gray-200 flex justify-around text-center text-xs font-bold text-gray-600">
+                    <div>🏆 Best Score: <span id="home-best-score" class="text-emerald-600">0</span></div>
+                    <div>⭐ Total Stars: <span id="home-stars" class="text-amber-500">0</span></div>
+                </div>
+            </div>
+        </section>
 
-    function handleFormSubmit(event) {
-      event.preventDefault();
+        <!-- 2. GAME 1: FIND THE LETTER -->
+        <section id="find-game-screen" class="screen-view hidden animate-pop">
+            <div class="bg-white p-5 rounded-3xl shadow-xl border-4 border-emerald-300 max-w-lg mx-auto text-center">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-emerald-700 font-bold bg-emerald-100 px-3 py-1 rounded-full text-xs">Game 1: Find Letter</span>
+                    <span id="find-feedback" class="font-bold text-base h-6"></span>
+                </div>
 
-      const id = document.getElementById('booking-id').value;
-      const name = document.getElementById('form-name').value;
-      const phone = document.getElementById('form-phone').value;
-      const date = document.getElementById('form-date').value;
-      const time = document.getElementById('form-time').value;
-      const place = document.getElementById('form-place').value;
-      const notes = document.getElementById('form-notes').value;
-      const alert = document.getElementById('modal-alert');
+                <div class="mb-5">
+                    <p class="text-gray-600 text-base font-semibold mb-2">Find this letter:</p>
+                    <div id="find-target-letter" class="arabic-text text-6xl font-bold text-emerald-600 bg-emerald-50 py-4 rounded-2xl border-2 border-emerald-200 shadow-inner w-32 h-32 mx-auto flex items-center justify-center animate-pulse-gentle">
+                        بَ
+                    </div>
+                </div>
 
-      const duplicate = bookings.find(b => b.date === date && b.time === time && b.id !== id);
+                <div id="find-options-grid" class="grid grid-cols-2 gap-3"></div>
+            </div>
+        </section>
 
-      if (duplicate) {
-        alert.innerText = `Warning: Slot already booked for "${duplicate.name}" at this date and time!`;
-        alert.style.display = 'block';
-        return;
-      }
+        <!-- 3. GAME 2: WRITE THE LETTER (LETTER TRACING) -->
+        <section id="trace-game-screen" class="screen-view hidden animate-pop">
+            <div class="bg-white p-4 rounded-3xl shadow-xl border-4 border-sky-300 max-w-lg mx-auto text-center">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sky-700 font-bold bg-sky-100 px-3 py-1 rounded-full text-xs">Game 2: Trace & Write</span>
+                    <span id="trace-feedback" class="font-bold text-xs text-sky-600">Trace over the letter!</span>
+                </div>
 
-      if (id) {
-        const index = bookings.findIndex(b => b.id === id);
-        if (index !== -1) {
-          bookings[index] = { id, date, time, name, phone, place, notes };
+                <div class="mb-2">
+                    <p class="text-gray-600 text-xs font-semibold mb-1">Write with your finger:</p>
+                </div>
+
+                <!-- Drawing Canvas Container -->
+                <div class="relative w-64 h-64 mx-auto bg-sky-50 rounded-2xl border-4 border-dashed border-sky-300 overflow-hidden touch-none" id="trace-canvas-container">
+                    <!-- Background Template Letter -->
+                    <div id="trace-target-letter" class="arabic-text absolute inset-0 text-9xl font-bold text-sky-200 flex items-center justify-center select-none pointer-events-none">
+                        بَ
+                    </div>
+                    <!-- Drawing Canvas -->
+                    <canvas id="trace-canvas" class="absolute inset-0 w-full h-full block cursor-crosshair"></canvas>
+                </div>
+
+                <div class="mt-4 flex justify-center gap-3">
+                    <button onclick="clearTraceCanvas()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-xl text-xs border-b-2 border-gray-400">
+                        🗑️ Clear
+                    </button>
+                    <button onclick="completeTracing()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-xl text-xs border-b-2 border-sky-700 shadow-md">
+                        Done ✅
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. GAME 3: CATCH THE LETTER -->
+        <section id="catch-game-screen" class="screen-view hidden animate-pop">
+            <div class="bg-white p-4 rounded-3xl shadow-xl border-4 border-purple-300 max-w-lg mx-auto text-center relative overflow-hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-purple-700 font-bold bg-purple-100 px-3 py-1 rounded-full text-xs">Game 3: Catch Letter</span>
+                    <div class="text-purple-800 font-bold text-xs">Time: <span id="catch-timer">30</span>s</div>
+                </div>
+
+                <div class="mb-2 bg-purple-50 py-1.5 px-3 rounded-xl border border-purple-200 flex justify-center items-center gap-2">
+                    <span class="text-gray-600 font-semibold text-xs">Catch ONLY:</span>
+                    <span id="catch-target-letter" class="arabic-text text-3xl font-bold text-purple-600">شَ</span>
+                </div>
+
+                <div class="relative w-full h-72 bg-purple-900/5 rounded-2xl border-2 border-purple-200 overflow-hidden touch-none" id="catch-canvas-container">
+                    <canvas id="catch-canvas" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. GAME 4: MEMORY GAME -->
+        <section id="memory-game-screen" class="screen-view hidden animate-pop">
+            <div class="bg-white p-4 rounded-3xl shadow-xl border-4 border-rose-300 max-w-lg mx-auto text-center">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-rose-700 font-bold bg-rose-100 px-3 py-1 rounded-full text-xs">Game 4: Memory Match</span>
+                    <span id="memory-feedback" class="font-bold text-rose-600 text-xs">Match the pairs!</span>
+                </div>
+
+                <div id="memory-grid" class="grid grid-cols-3 gap-2.5 justify-center max-h-[360px] overflow-y-auto p-1"></div>
+            </div>
+        </section>
+
+        <!-- 6. PROGRESS & DASHBOARD SCREEN -->
+        <section id="progress-screen" class="screen-view hidden animate-pop">
+            <div class="bg-white p-5 rounded-3xl shadow-xl border-4 border-amber-300 max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold text-amber-600 text-center mb-3 flex items-center justify-center gap-2">
+                    📊 Your Learning Progress
+                </h2>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center mb-5">
+                    <div class="bg-amber-50 p-2 rounded-2xl border border-amber-200">
+                        <div class="text-xl">⭐</div>
+                        <div id="prog-stars" class="text-lg font-bold text-amber-800">0</div>
+                        <div class="text-[10px] text-amber-600 font-semibold">Total Stars</div>
+                    </div>
+                    <div class="bg-emerald-50 p-2 rounded-2xl border border-emerald-200">
+                        <div class="text-xl">🏆</div>
+                        <div id="prog-best" class="text-lg font-bold text-emerald-800">0</div>
+                        <div class="text-[10px] text-emerald-600 font-semibold">Best Score</div>
+                    </div>
+                    <div class="bg-sky-50 p-2 rounded-2xl border border-sky-200">
+                        <div class="text-xl">🎮</div>
+                        <div id="prog-level" class="text-lg font-bold text-sky-800">1</div>
+                        <div class="text-[10px] text-sky-600 font-semibold">Current Level</div>
+                    </div>
+                    <div class="bg-purple-50 p-2 rounded-2xl border border-purple-200">
+                        <div class="text-xl">📚</div>
+                        <div id="prog-practiced-count" class="text-lg font-bold text-purple-800">0/14</div>
+                        <div class="text-[10px] text-purple-600 font-semibold">Practiced</div>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-700 mb-2 text-center">Letters Collection (14 Base Letters)</h3>
+                <div id="letters-collection-grid" class="grid grid-cols-4 sm:grid-cols-7 gap-2 text-center"></div>
+
+                <div class="mt-5 text-center">
+                    <button onclick="resetProgress()" class="text-xs text-gray-400 underline hover:text-red-500">
+                        Reset Progress
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-2 text-[11px] text-emerald-800/60 font-semibold">
+        Child-Safe Educational Arabic Learning Game • 100% Offline Friendly
+    </footer>
+
+    <script>
+        const BASE_LETTERS = ['ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش'];
+
+        const EXPANDED_LETTERS = [
+            { char: 'اَ' }, { char: 'بَ' }, { char: 'تَ' }, { char: 'ثَ' },
+            { char: 'جَ' }, { char: 'حَ' }, { char: 'خَ' }, { char: 'دَ' },
+            { char: 'ذَ' }, { char: 'رَ' }, { char: 'زَ' }, { char: 'سَ' }, { char: 'شَ' },
+            { char: 'بِ' }, { char: 'تِ' }, { char: 'ثِ' }, { char: 'جِ' },
+            { char: 'حِ' }, { char: 'خِ' }, { char: 'دِ' }, { char: 'رِ' },
+            { char: 'سِ' }, { char: 'شِ' },
+            { char: 'بُ' }, { char: 'تُ' }, { char: 'ثُ' }, { char: 'جُ' },
+            { char: 'حُ' }, { char: 'خُ' }, { char: 'دُ' }, { char: 'رُ' },
+            { char: 'سُ' }, { char: 'شُ' },
+            { char: 'بْ' }, { char: 'تْ' }, { char: 'سْ' }, { char: 'شْ' },
+            { char: 'بَّ' }, { char: 'تَّ' }, { char: 'سَّ' },
+            { char: 'بَا' }, { char: 'تَا' }, { char: 'جَا' }, { char: 'حَا' },
+            { char: 'سَا' }, { char: 'شَا' }, { char: 'بُو' }, { char: 'بِي' }
+        ];
+
+        let state = {
+            stars: 0,
+            bestScore: 0,
+            level: 1,
+            soundOn: true,
+            practicedLetters: {}
+        };
+
+        let currentTargetObj = null;
+        let catchGameInterval = null;
+        let catchTimerInterval = null;
+        let catchItems = [];
+        let memoryFlipped = [];
+        let memoryMatchedCount = 0;
+
+        let isTracing = false;
+        let traceHasDrawn = false;
+
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
-      } else {
-        const nextId = (bookings.length > 0 ? (Math.max(...bookings.map(b => parseInt(b.id))) + 1) : 1)
-          .toString().padStart(2, '0');
-        bookings.push({ id: nextId, date, time, name, phone, place, notes });
-      }
 
-      saveData();
-      closeModal();
-      renderBookings();
-    }
-
-    function editBooking(id) {
-      const userPin = prompt('എഡിറ്റ് ചെയ്യാൻ PIN നമ്പർ നൽകുക:');
-      if (userPin === null) return;
-
-      if (userPin === SECRET_PIN) {
-        openModal(id);
-      } else {
-        alert('തെറ്റായ PIN നമ്പർ! എഡിറ്റ് ചെയ്യാൻ സാധിക്കില്ല.');
-      }
-    }
-
-    function deleteBooking(id) {
-      const userPin = prompt('ഡിലീറ്റ് ചെയ്യാൻ PIN നമ്പർ നൽകുക:');
-      if (userPin === null) return;
-
-      if (userPin === SECRET_PIN) {
-        if (confirm('തീർച്ചയായും ഇത് ഡിലീറ്റ് ചെയ്യണമെന്നുണ്ടോ?')) {
-          bookings = bookings.filter(b => b.id !== id);
-          saveData();
-          renderBookings();
+        function playTone(freq, type, duration) {
+            if (!state.soundOn) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
         }
-      } else {
-        alert('തെറ്റായ PIN നമ്പർ! ഡിലീറ്റ് ചെയ്യാൻ സാധിക്കില്ല.');
-      }
-    }
 
-    function switchView(view) {
-      const listContainer = document.getElementById('booking-list-container');
-      const calContainer = document.getElementById('calendar-container');
-      const btnList = document.getElementById('btn-list-view');
-      const btnCal = document.getElementById('btn-cal-view');
+        function playSound(type) {
+            if (!state.soundOn) return;
+            if (type === 'click') playTone(400, 'sine', 0.05);
+            else if (type === 'correct') {
+                playTone(523.25, 'triangle', 0.1);
+                setTimeout(() => playTone(659.25, 'triangle', 0.1), 100);
+                setTimeout(() => playTone(783.99, 'triangle', 0.2), 200);
+            } else if (type === 'wrong') {
+                playTone(200, 'sawtooth', 0.15);
+                setTimeout(() => playTone(150, 'sawtooth', 0.2), 150);
+            } else if (type === 'level') {
+                [400, 500, 600, 800].forEach((f, i) => {
+                    setTimeout(() => playTone(f, 'sine', 0.15), i * 100);
+                });
+            }
+        }
 
-      if (view === 'list') {
-        listContainer.style.display = 'flex';
-        calContainer.style.display = 'none';
-        btnList.classList.add('active');
-        btnCal.classList.remove('active');
-      } else {
-        listContainer.style.display = 'none';
-        calContainer.style.display = 'block';
-        btnList.classList.remove('active');
-        btnCal.classList.add('active');
-      }
-    }
+        function toggleSound() {
+            state.soundOn = !state.soundOn;
+            document.getElementById('sound-toggle').innerText = state.soundOn ? '🔊' : '🔇';
+            saveState();
+        }
 
-    function renderCalendar() {
-      const grid = document.getElementById('calendar-grid');
-      grid.innerHTML = '';
-      
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      days.forEach(d => {
-        grid.innerHTML += `<div class="calendar-day-head">${d}</div>`;
-      });
+        function loadState() {
+            const saved = localStorage.getItem('arabic_game_madrasa_state');
+            if (saved) {
+                try { state = { ...state, ...JSON.parse(saved) }; } catch(e){}
+            }
+            updateUI();
+        }
 
-      for (let day = 1; day <= 30; day++) {
-        const dateStr = `2026-09-${day.toString().padStart(2, '0')}`;
-        const dayBookings = bookings.filter(b => b.date === dateStr);
-        
-        let dayCell = `<div class="calendar-day"><div class="day-num">${day}</div>`;
-        dayBookings.forEach(b => {
-          dayCell += `<div class="calendar-event" title="${b.name} (${formatTime12Hr(b.time)})">${formatTime12Hr(b.time)} ${b.name}</div>`;
+        function saveState() {
+            localStorage.setItem('arabic_game_madrasa_state', JSON.stringify(state));
+            updateUI();
+        }
+
+        function markLetterPracticed(char) {
+            state.practicedLetters[char] = true;
+            saveState();
+        }
+
+        function addStar() {
+            state.stars += 1;
+            if (state.stars > state.bestScore) state.bestScore = state.stars;
+
+            const prevLevel = state.level;
+            if (state.stars >= 20) state.level = 5;
+            else if (state.stars >= 15) state.level = 4;
+            else if (state.stars >= 10) state.level = 3;
+            else if (state.stars >= 5) state.level = 2;
+            else state.level = 1;
+
+            if (state.level > prevLevel) {
+                playSound('level');
+                triggerCelebration(true);
+            }
+
+            if ([5, 10, 20].includes(state.stars)) triggerCelebration(true);
+            saveState();
+        }
+
+        function getRandomItem() {
+            return EXPANDED_LETTERS[Math.floor(Math.random() * EXPANDED_LETTERS.length)];
+        }
+
+        function updateUI() {
+            document.getElementById('header-stars').innerText = state.stars;
+            document.getElementById('header-level').innerText = state.level;
+            document.getElementById('home-stars').innerText = state.stars;
+            document.getElementById('home-best-score').innerText = state.bestScore;
+            
+            document.getElementById('prog-stars').innerText = state.stars;
+            document.getElementById('prog-best').innerText = state.bestScore;
+            document.getElementById('prog-level').innerText = state.level;
+
+            const practicedCount = Object.keys(state.practicedLetters).length;
+            document.getElementById('prog-practiced-count').innerText = `${practicedCount}/${BASE_LETTERS.length}`;
+
+            renderProgressCollection();
+        }
+
+        function resetProgress() {
+            if (confirm("Reset all stars and progress?")) {
+                state.stars = 0;
+                state.bestScore = 0;
+                state.level = 1;
+                state.practicedLetters = {};
+                saveState();
+            }
+        }
+
+        function showScreen(screenId) {
+            initAudio();
+            playSound('click');
+            if (screenId !== 'catch-game-screen') stopCatchGame();
+
+            document.querySelectorAll('.screen-view').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+
+            if (screenId === 'progress-screen') updateUI();
+        }
+
+        function triggerCelebration(isBig = false) {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: isBig ? 80 : 35,
+                    spread: isBig ? 70 : 40,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function renderProgressCollection() {
+            const grid = document.getElementById('letters-collection-grid');
+            grid.innerHTML = '';
+            BASE_LETTERS.forEach(letter => {
+                const isPracticed = !!state.practicedLetters[letter];
+                const card = document.createElement('div');
+                card.className = `p-2 rounded-2xl border-2 flex flex-col items-center justify-center font-bold relative ${
+                    isPracticed ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-gray-50 border-gray-200 text-gray-300'
+                }`;
+                card.innerHTML = `
+                    <span class="arabic-text text-2xl">${letter}</span>
+                    ${isPracticed ? '<span class="absolute -top-1 -right-1 text-xs">⭐</span>' : ''}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function startFindGame() {
+            showScreen('find-game-screen');
+            nextFindQuestion();
+        }
+
+        function nextFindQuestion() {
+            currentTargetObj = getRandomItem();
+            document.getElementById('find-target-letter').innerText = currentTargetObj.char;
+            document.getElementById('find-feedback').innerText = '';
+
+            const options = [currentTargetObj];
+            while (options.length < 4) {
+                const rand = getRandomItem();
+                if (!options.some(o => o.char === rand.char)) options.push(rand);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('find-options-grid');
+            grid.innerHTML = '';
+            options.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "arabic-text text-4xl font-bold bg-white hover:bg-emerald-50 text-emerald-800 p-3 rounded-2xl shadow-md border-b-4 border-emerald-200 active:translate-y-1 transition flex justify-center items-center h-20";
+                btn.innerText = item.char;
+                btn.onclick = () => checkFindAnswer(item.char, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkFindAnswer(selectedChar, btnElement) {
+            if (selectedChar === currentTargetObj.char) {
+                playSound('correct');
+                triggerCelebration(false);
+                addStar();
+                markLetterPracticed(currentTargetObj.char[0]);
+                
+                const fb = document.getElementById('find-feedback');
+                fb.innerText = "🌟 Excellent!";
+                fb.className = "font-bold text-base text-emerald-600 animate-bounce";
+
+                btnElement.classList.add('bg-emerald-200', 'border-emerald-500');
+                setTimeout(nextFindQuestion, 1200);
+            } else {
+                playSound('wrong');
+                btnElement.classList.add('animate-shake', 'bg-red-100', 'border-red-300');
+                const fb = document.getElementById('find-feedback');
+                fb.innerText = "Try Again! 😊";
+                fb.className = "font-bold text-base text-amber-600";
+                setTimeout(() => btnElement.classList.remove('animate-shake'), 400);
+            }
+        }
+
+        function startTraceGame() {
+            showScreen('trace-game-screen');
+            nextTraceQuestion();
+            initTraceCanvas();
+        }
+
+        function nextTraceQuestion() {
+            currentTargetObj = getRandomItem();
+            document.getElementById('trace-target-letter').innerText = currentTargetObj.char;
+            clearTraceCanvas();
+        }
+
+        function initTraceCanvas() {
+            const canvas = document.getElementById('trace-canvas');
+            const container = document.getElementById('trace-canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            const ctx = canvas.getContext('2d');
+
+            function startDrawing(e) {
+                isTracing = true;
+                traceHasDrawn = true;
+                draw(e);
+            }
+
+            function stopDrawing() {
+                isTracing = false;
+                ctx.beginPath();
+            }
+
+            function draw(e) {
+                if (!isTracing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+                ctx.lineWidth = 14;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = '#0284c7';
+
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mousemove', draw);
+
+            canvas.addEventListener('touchstart', (e) => { startDrawing(e); e.preventDefault(); });
+            canvas.addEventListener('touchend', stopDrawing);
+            canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        }
+
+        function clearTraceCanvas() {
+            const canvas = document.getElementById('trace-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            traceHasDrawn = false;
+        }
+
+        function completeTracing() {
+            if (!traceHasDrawn) {
+                alert("Please trace over the letter with your finger! ✍️");
+                return;
+            }
+            playSound('correct');
+            triggerCelebration(false);
+            addStar();
+            markLetterPracticed(currentTargetObj.char[0]);
+            nextTraceQuestion();
+        }
+
+        function startCatchGame() {
+            showScreen('catch-game-screen');
+            currentTargetObj = getRandomItem();
+            document.getElementById('catch-target-letter').innerText = currentTargetObj.char;
+
+            catchItems = [];
+            let timeLeft = 30;
+            document.getElementById('catch-timer').innerText = timeLeft;
+
+            const canvas = document.getElementById('catch-canvas');
+            const container = document.getElementById('catch-canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            stopCatchGame();
+
+            catchGameInterval = setInterval(spawnCatchItem, 1200);
+
+            catchTimerInterval = setInterval(() => {
+                timeLeft -= 1;
+                document.getElementById('catch-timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    stopCatchGame();
+                    triggerCelebration(true);
+                    alert(`Great Job! Game Over 🎉`);
+                    showScreen('home-screen');
+                }
+            }, 1000);
+
+            canvas.onclick = (e) => handleCatchClick(e, canvas);
+            canvas.ontouchstart = (e) => {
+                if (e.touches.length > 0) handleCatchClick(e.touches[0], canvas);
+            };
+
+            requestAnimationFrame(renderCatchCanvas);
+        }
+
+        function stopCatchGame() {
+            if (catchGameInterval) clearInterval(catchGameInterval);
+            if (catchTimerInterval) clearInterval(catchTimerInterval);
+            catchGameInterval = null;
+            catchTimerInterval = null;
+        }
+
+        function spawnCatchItem() {
+            const canvas = document.getElementById('catch-canvas');
+            if (!canvas || !canvas.width) return;
+
+            const isTarget = Math.random() < 0.45;
+            const itemObj = isTarget ? currentTargetObj : getRandomItem();
+
+            catchItems.push({
+                x: Math.random() * (canvas.width - 60) + 30,
+                y: -20,
+                speed: 0.6 + Math.random() * 0.8,
+                char: itemObj.char,
+                radius: 26,
+                color: isTarget ? '#8b5cf6' : '#ec4899'
+            });
+        }
+
+        function handleCatchClick(e, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            for (let i = catchItems.length - 1; i >= 0; i--) {
+                const item = catchItems[i];
+                const dist = Math.hypot(item.x - clickX, item.y - clickY);
+                if (dist < item.radius + 15) {
+                    if (item.char === currentTargetObj.char) {
+                        playSound('correct');
+                        addStar();
+                        markLetterPracticed(currentTargetObj.char[0]);
+                        catchItems.splice(i, 1);
+                        triggerCelebration(false);
+                    } else {
+                        playSound('wrong');
+                        catchItems.splice(i, 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        function renderCatchCanvas() {
+            const canvas = document.getElementById('catch-canvas');
+            if (!canvas || document.getElementById('catch-game-screen').classList.contains('hidden')) return;
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = catchItems.length - 1; i >= 0; i--) {
+                const item = catchItems[i];
+                item.y += item.speed;
+
+                ctx.beginPath();
+                ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = item.color;
+                ctx.stroke();
+
+                ctx.font = 'bold 24px "Scheherazade New", serif';
+                ctx.fillStyle = '#1f2937';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.char, item.x, item.y + 2);
+
+                if (item.y > canvas.height + 40) {
+                    catchItems.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(renderCatchCanvas);
+        }
+
+        function startMemoryGame() {
+            showScreen('memory-game-screen');
+            document.getElementById('memory-feedback').innerText = "Find matching letter pairs!";
+
+            const pairCount = 3;
+            const selectedItems = [];
+            
+            while (selectedItems.length < pairCount) {
+                const rand = getRandomItem();
+                if (!selectedItems.some(item => item.char === rand.char)) selectedItems.push(rand);
+            }
+
+            const cardsData = [...selectedItems, ...selectedItems].sort(() => Math.random() - 0.5);
+
+            memoryFlipped = [];
+            memoryMatchedCount = 0;
+
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+
+            cardsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "perspective-1000 h-20 sm:h-24 cursor-pointer";
+                card.innerHTML = `
+                    <div class="card-inner relative w-full h-full transform-style-3d transition-transform duration-300 rounded-2xl shadow-md" data-char="${item.char}" data-index="${index}">
+                        <div class="absolute w-full h-full backface-hidden bg-rose-400 border-b-4 border-rose-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                            ❓
+                        </div>
+                        <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-white border-2 border-rose-300 rounded-2xl flex items-center justify-center arabic-text text-3xl font-bold text-rose-600">
+                            ${item.char}
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => flipMemoryCard(card.querySelector('.card-inner'), item.char, index);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipMemoryCard(cardInner, char, index) {
+            if (memoryFlipped.length >= 2) return;
+            if (cardInner.classList.contains('rotate-y-180')) return;
+
+            playSound('click');
+            cardInner.classList.add('rotate-y-180');
+            memoryFlipped.push({ element: cardInner, char: char, index: index });
+
+            if (memoryFlipped.length === 2) {
+                const [c1, c2] = memoryFlipped;
+                if (c1.char === c2.char && c1.index !== c2.index) {
+                    playSound('correct');
+                    addStar();
+                    markLetterPracticed(c1.char[0]);
+                    memoryMatchedCount += 1;
+                    memoryFlipped = [];
+
+                    if (memoryMatchedCount === 3) {
+                        document.getElementById('memory-feedback').innerText = "🎉 Great Memory!";
+                        triggerCelebration(true);
+                        setTimeout(startMemoryGame, 1800);
+                    }
+                } else {
+                    playSound('wrong');
+                    setTimeout(() => {
+                        c1.element.classList.remove('rotate-y-180');
+                        c2.element.classList.remove('rotate-y-180');
+                        memoryFlipped = [];
+                    }, 800);
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
         });
-        dayCell += `</div>`;
-        grid.innerHTML += dayCell;
-      }
-    }
-
-    window.onload = init;
-  </script>
+    </script>
 </body>
 </html>
